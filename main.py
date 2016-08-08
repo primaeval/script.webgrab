@@ -100,6 +100,19 @@ def countries():
         })
     return items
 
+@plugin.route('/rename_channel/<id>')
+def rename_channel(id):
+    channels = plugin.get_storage('channels')
+    channel = channels[id]
+    (country,name,site,site_id,xmltv_id) = id.split("|")
+    dialog = xbmcgui.Dialog()
+    name = dialog.input('New Channel Name', name, type=xbmcgui.INPUT_ALPHANUM)
+    if name:
+        del(channels[id])
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
+        xbmc.executebuiltin('Container.Refresh')
+
 @plugin.route('/channels')
 def channels():
     channels = plugin.get_storage('channels')
@@ -107,11 +120,14 @@ def channels():
     for id in sorted(channels):
         (country,name,site,site_id,xmltv_id) = id.split("|")
         label = "%s - %s - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
+        context_items = []
+        context_items.append(('Rename Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_channel', id=id))))
         items.append(
         {
             'label': label,
             'path': plugin.url_for('toggle',country=country,site=site,site_id=site_id,xmltv_id=xmltv_id,name=name),
             'thumbnail':get_icon_path('settings'),
+            'context_menu': context_items,
         })
     return items
 
@@ -156,7 +172,6 @@ def copy_config():
         for f in files:
             input = "%s%s" % (input_folder,f)
             output = "%s%s" % (output_folder,f)
-            log((input,output))
             xbmcvfs.copy(input,output)
 
 
