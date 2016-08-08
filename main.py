@@ -18,6 +18,10 @@ def get_icon_path(icon_name):
     addon_path = xbmcaddon.Addon().getAddonInfo("path")
     return os.path.join(addon_path, 'resources', 'img', icon_name+".png")
 
+def remove_formatting(label):
+    label = re.sub(r"\[/?[BI]\]",'',label)
+    label = re.sub(r"\[/?COLOR.*?\]",'',label)
+    return label
 
 @plugin.route('/download_ini_pack')
 def download_ini_pack():
@@ -44,7 +48,8 @@ def toggle(country,site,site_id,xmltv_id,name):
     if id in channels:
         del(channels[id])
     else:
-        channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
+        #channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
+        channels[id] = -1
     xbmc.executebuiltin('Container.Refresh')
 
 @plugin.route('/provider/<country>/<provider>')
@@ -68,19 +73,29 @@ def provider(country,provider):
             'path': plugin.url_for('toggle',country=country,site=site,site_id=site_id,xmltv_id=xmltv_id,name=name),
             'thumbnail':get_icon_path('settings'),
         })
-    return items
+    sorted_items = sorted(items, key=lambda item: remove_formatting(item['label']))
+    return sorted_items
 
 @plugin.route('/country/<country>')
 def country(country):
+    channels = plugin.get_storage('channels')
+    sites = {}
+    for c in channels:
+        (country,name,site,site_id,xmltv_id) = c.split("|")
+        sites[site] = site
     folder = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s' % country
     items = []
     dirs, files = xbmcvfs.listdir(folder)
     files = [f for f in files if f.endswith('channels.xml')]
-    for f in files:
+    for f in sorted(files):
         provider = f[:-13]
+        if provider in sites:
+            label = "[COLOR yellow]%s[/COLOR]" % provider
+        else:
+            label = provider
         items.append(
         {
-            'label': provider,
+            'label': label,
             'path': plugin.url_for('provider', country=country, provider=provider),
             'thumbnail':get_icon_path('settings'),
         })
@@ -88,13 +103,22 @@ def country(country):
 
 @plugin.route('/countries')
 def countries():
+    channels = plugin.get_storage('channels')
+    countries = {}
+    for c in channels:
+        (country,name,site,site_id,xmltv_id) = c.split("|")
+        countries[country] = country
     folder = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack'
     items = []
     dirs, files = xbmcvfs.listdir(folder)
     for dir in dirs:
+        if dir in countries:
+            label = "[COLOR yellow]%s[/COLOR]" % dir
+        else:
+            label = dir
         items.append(
         {
-            'label': dir,
+            'label': label,
             'path': plugin.url_for('country', country=dir),
             'thumbnail':get_icon_path('settings'),
         })
@@ -110,7 +134,8 @@ def rename_id(id):
     if xmltv_id:
         del(channels[id])
         id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
-        channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
+        #channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
+        channels[id] = channel
         xbmc.executebuiltin('Container.Refresh')
 
 @plugin.route('/rename_channel/<id>')
@@ -123,7 +148,8 @@ def rename_channel(id):
     if name:
         del(channels[id])
         id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
-        channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
+        #channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
+        channels[id] = channel
         xbmc.executebuiltin('Container.Refresh')
 
 @plugin.route('/channels')
@@ -163,14 +189,16 @@ def write_config():
         xmltv = 'special://profile/addon_data/script.webgrab/webgrab/%s' % xmltv_name
     f.write('<filename>%s</filename>\n' % xbmc.translatePath(xmltv))
     for c in sorted(channels):
-        str = "%s\n" % channels[c]
+        (country,name,site,site_id,xmltv_id) = id.split("|")
+        xml = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
+        str = "%s\n" % xml
         f.write(str)
     f.write('</settings>\n')
     f.close()
     inis = {}
     for c in channels:
         (country,name,site,site_id,xmltv_id) = c.split("|")
-        inis[site] = country
+        inis[site] = country #TODO deal with duplicates
     for ini in inis:
         country = inis[ini]
         src = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s/%s.ini' % (country,ini)
