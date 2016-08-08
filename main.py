@@ -125,7 +125,7 @@ def write_config():
     f.write('<settings>\n')
     xmltv = 'special://profile/addon_data/script.webgrab/webgrab/xmltv.xml'
     f.write('<filename>%s</filename>\n' % xbmc.translatePath(xmltv))
-    for c in channels:
+    for c in sorted(channels):
         str = "%s\n" % channels[c]
         f.write(str)
     f.write('</settings>\n')
