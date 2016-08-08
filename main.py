@@ -49,7 +49,6 @@ def toggle(country,site,site_id,xmltv_id,name):
     if id in channels:
         del(channels[id])
     else:
-        #channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
         channels[id] = -1
     xbmc.executebuiltin('Container.Refresh')
 
@@ -136,7 +135,6 @@ def rename_id(id):
     if xmltv_id:
         del(channels[id])
         id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
-        #channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
         channels[id] = channel
         xbmc.executebuiltin('Container.Refresh')
 
@@ -150,7 +148,6 @@ def rename_channel(id):
     if name:
         del(channels[id])
         id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
-        #channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
         channels[id] = channel
         xbmc.executebuiltin('Container.Refresh')
 
@@ -248,7 +245,6 @@ def write_config():
     f.write('<filename>%s</filename>\n' % xbmc.translatePath(xmltv))
     sorted_ids = sorted(channels.items(), key=operator.itemgetter(1))
     for (id,order) in sorted_ids:
-    #for c in sorted(channels):
         (country,name,site,site_id,xmltv_id) = id.split("|")
         xml = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
         str = "%s\n" % xml
