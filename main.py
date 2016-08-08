@@ -139,7 +139,14 @@ def write_config():
     f = xbmcvfs.File(file, 'wb')
     channels = plugin.get_storage('channels')
     f.write('<settings>\n')
-    xmltv = 'special://profile/addon_data/script.webgrab/webgrab/xmltv.xml'
+    xmltv_output_folder = plugin.get_setting('xmltv_output_folder')
+    xmltv_name = plugin.get_setting('xmltv_name')
+    if not xmltv_name:
+        xmltv_name = "xmltv.xml"
+    if xmltv_output_folder:
+        xmltv = "%s%s" % (xmltv_output_folder,xmltv_name)
+    else:
+        xmltv = 'special://profile/addon_data/script.webgrab/webgrab/%s' % xmltv_name
     f.write('<filename>%s</filename>\n' % xbmc.translatePath(xmltv))
     for c in sorted(channels):
         str = "%s\n" % channels[c]

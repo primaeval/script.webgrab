@@ -2,5 +2,7 @@
 <category label="Config">
 <setting id="exe" label="Webgrab+Plus Program" type="file" default="" />
 <setting id="config_output_folder" label="Config Output Folder" type="folder" default="" />
+<setting id="xmltv_output_folder" label="xmltv Output Folder" type="folder" default="" />
+<setting id="xmltv_name" label="xmltv File Name" type="text" default="xmltv.xml" />
 </category>
 </settings>
