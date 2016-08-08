@@ -184,30 +184,23 @@ def move_channel(id):
         (country,name,site,site_id,xmltv_id) = c.split("|")
         channel_list.append((country,name,site,site_id,xmltv_id,order))
     sorted_channels = sorted(channel_list, key=lambda c: c[5])
-    sorted_channels_names = [c[1] for c in sorted_channels]
+    sorted_channels_names = ["%s - %s - %s (%s) [%s]" % (c[0],c[1],c[2],c[3],c[4]) for c in sorted_channels]
     length = len(sorted_channels_names)
     dialog = xbmcgui.Dialog()
 
-    index = dialog.select('After?', sorted_channels_names)
+    index = dialog.select('Move Before?', sorted_channels_names)
     if index == -1:
         return
 
     this_channel = channels[id]
     order = channels[id]
     (country,name,site,site_id,xmltv_id) = id.split("|")
-
-    new_channels = []
-    for i in range(0,index):
-        new_channels.append(sorted_channels[i])
-
-    new_channels.append((country,name,site,site_id,xmltv_id,index))
-
-    for i in range(index,length):
-        new_channels.append(sorted_channels[i])
-
+    oldindex = sorted_channels.index((country,name,site,site_id,xmltv_id,order))
+    sorted_channels.insert(index, sorted_channels.pop(oldindex))
     channels.clear()
+
     i = 0
-    for (country,name,site,site_id,xmltv_id,order) in new_channels:
+    for (country,name,site,site_id,xmltv_id,order) in sorted_channels:
         id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
         channels[id] = i
         i = i + 1
