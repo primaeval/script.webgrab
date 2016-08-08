@@ -1,0 +1,5 @@
+<settings>
+<category label="Config">
+<setting id="exe" label="Webgrab+Plus Program" type="file" default="" />
+</category>
+</settings>
