@@ -18,9 +18,9 @@ def get_icon_path(icon_name):
     addon_path = xbmcaddon.Addon().getAddonInfo("path")
     return os.path.join(addon_path, 'resources', 'img', icon_name+".png")
 
-    
+
 @plugin.route('/download_ini_pack')
-def download_ini_pack(): 
+def download_ini_pack():
     folder = 'special://profile/addon_data/script.webgrab/webgrab'
     file = 'special://profile/addon_data/script.webgrab/SiteIniPack_current.zip'
     xbmcvfs.mkdirs(folder)
@@ -35,8 +35,8 @@ def download_ini_pack():
         zip = zipfile.ZipFile(xbmc.translatePath(file))
         z = zip.extractall(xbmc.translatePath(folder))
     except:
-        return   
-  
+        return
+
 @plugin.route('/toggle/<country>/<site>/<site_id>/<xmltv_id>/<name>')
 def toggle(country,site,site_id,xmltv_id,name):
     channels = plugin.get_storage('channels')
@@ -46,7 +46,7 @@ def toggle(country,site,site_id,xmltv_id,name):
     else:
         channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
     xbmc.executebuiltin('Container.Refresh')
-  
+
 @plugin.route('/provider/<country>/<provider>')
 def provider(country,provider):
     channels = plugin.get_storage('channels')
@@ -68,8 +68,8 @@ def provider(country,provider):
             'path': plugin.url_for('toggle',country=country,site=site,site_id=site_id,xmltv_id=xmltv_id,name=name),
             'thumbnail':get_icon_path('settings'),
         })
-    return items  
-  
+    return items
+
 @plugin.route('/country/<country>')
 def country(country):
     folder = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s' % country
@@ -84,8 +84,8 @@ def country(country):
             'path': plugin.url_for('provider', country=country, provider=provider),
             'thumbnail':get_icon_path('settings'),
         })
-    return items    
-    
+    return items
+
 @plugin.route('/countries')
 def countries():
     folder = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack'
@@ -113,8 +113,8 @@ def channels():
             'path': plugin.url_for('toggle',country=country,site=site,site_id=site_id,xmltv_id=xmltv_id,name=name),
             'thumbnail':get_icon_path('settings'),
         })
-    return items    
-    
+    return items
+
 @plugin.route('/write_config')
 def write_config():
     folder = 'special://profile/addon_data/script.webgrab/webgrab/config'
@@ -139,14 +139,28 @@ def write_config():
         src = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s/%s.ini' % (country,ini)
         dst = 'special://profile/addon_data/script.webgrab/webgrab/config/%s.ini' % ini
         xbmcvfs.copy(src,dst)
-        
+
 @plugin.route('/run_webgrab')
 def run_webgrab():
     exe = plugin.get_setting('exe')
     path = xbmc.translatePath('special://profile/addon_data/script.webgrab/webgrab/config')
     status = call([exe,path],shell=False)
     return
-    
+
+@plugin.route('/copy_config')
+def copy_config():
+    output_folder = plugin.get_setting('config_output_folder')
+    input_folder = 'special://profile/addon_data/script.webgrab/webgrab/config/'
+    if output_folder:
+        dirs, files = xbmcvfs.listdir(input_folder)
+        for f in files:
+            input = "%s%s" % (input_folder,f)
+            output = "%s%s" % (output_folder,f)
+            log((input,output))
+            xbmcvfs.copy(input,output)
+
+
+
 @plugin.route('/')
 def index():
     items = []
@@ -173,13 +187,19 @@ def index():
         'label': 'Write Config File',
         'path': plugin.url_for('write_config'),
         'thumbnail':get_icon_path('settings'),
-    })     
+    })
     items.append(
     {
         'label': 'Run Webgrab',
         'path': plugin.url_for('run_webgrab'),
         'thumbnail':get_icon_path('settings'),
-    })        
+    })
+    items.append(
+    {
+        'label': 'Copy Config to Output Folder',
+        'path': plugin.url_for('copy_config'),
+        'thumbnail':get_icon_path('settings'),
+    })
     return items
 
 
