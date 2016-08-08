@@ -100,6 +100,19 @@ def countries():
         })
     return items
 
+@plugin.route('/rename_id/<id>')
+def rename_id(id):
+    channels = plugin.get_storage('channels')
+    channel = channels[id]
+    (country,name,site,site_id,xmltv_id) = id.split("|")
+    dialog = xbmcgui.Dialog()
+    xmltv_id = dialog.input('New xmltv id', xmltv_id, type=xbmcgui.INPUT_ALPHANUM)
+    if xmltv_id:
+        del(channels[id])
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        channels[id] = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
+        xbmc.executebuiltin('Container.Refresh')
+
 @plugin.route('/rename_channel/<id>')
 def rename_channel(id):
     channels = plugin.get_storage('channels')
@@ -122,6 +135,7 @@ def channels():
         label = "%s - %s - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
         context_items = []
         context_items.append(('Rename Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_channel', id=id))))
+        context_items.append(('Rename xmltv id', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_id', id=id))))
         items.append(
         {
             'label': label,
