@@ -11,7 +11,6 @@ provider-name="primaeval">
 <extension point="xbmc.python.pluginsource" library="main.py">
   <provides>executable</provides>
 </extension>
-<!--<extension point="xbmc.service" library="service.py" start="login"/>-->
 <extension point="xbmc.addon.metadata">
   <summary lang="en">Webgrab+Plus Configurator</summary>
   <description lang="en">Easily set up your Webgrab+Plus config and ini files.</description>
