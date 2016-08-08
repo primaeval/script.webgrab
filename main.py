@@ -181,7 +181,7 @@ def move_channel(id):
         (country,name,site,site_id,xmltv_id) = c.split("|")
         channel_list.append((country,name,site,site_id,xmltv_id,order))
     sorted_channels = sorted(channel_list, key=lambda c: c[5])
-    sorted_channels_names = ["%s - %s - %s (%s) [%s]" % (c[0],c[1],c[2],c[3],c[4]) for c in sorted_channels]
+    sorted_channels_names = ["%s - [COLOR yellow]%s[/COLOR] - %s (%s) [%s]" % (c[0],c[1],c[2],c[3],c[4]) for c in sorted_channels]
     length = len(sorted_channels_names)
     dialog = xbmcgui.Dialog()
 
