@@ -211,7 +211,7 @@ def channels():
     sorted_ids = sorted(channels.items(), key=operator.itemgetter(1))
     for (id,order) in sorted_ids:
         (country,name,site,site_id,xmltv_id) = id.split("|")
-        label = "%s - %s - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
+        label = "%s - [COLOR yellow]%s[/COLOR] - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
         context_items = []
         context_items.append(('Move', 'XBMC.RunPlugin(%s)' % (plugin.url_for('move_channel', id=id))))
         context_items.append(('Rename Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_channel', id=id))))
