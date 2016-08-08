@@ -78,12 +78,13 @@ def provider(country,provider):
 
 @plugin.route('/country/<country>')
 def country(country):
+    this_country = country
     channels = plugin.get_storage('channels')
     sites = {}
     for c in channels:
         (country,name,site,site_id,xmltv_id) = c.split("|")
         sites[site] = site
-    folder = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s' % country
+    folder = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s' % this_country
     items = []
     dirs, files = xbmcvfs.listdir(folder)
     files = [f for f in files if f.endswith('channels.xml')]
@@ -96,7 +97,7 @@ def country(country):
         items.append(
         {
             'label': label,
-            'path': plugin.url_for('provider', country=country, provider=provider),
+            'path': plugin.url_for('provider', country=this_country, provider=provider),
             'thumbnail':get_icon_path('settings'),
         })
     return items
