@@ -7,6 +7,7 @@ import requests
 import sys
 import xbmc,xbmcaddon,xbmcvfs,xbmcgui,xbmcplugin
 import zipfile
+import operator
 
 plugin = Plugin()
 
@@ -153,16 +154,39 @@ def rename_channel(id):
         channels[id] = channel
         xbmc.executebuiltin('Container.Refresh')
 
+@plugin.route('/sort_channels')
+def sort_channels():
+    dialog = xbmcgui.Dialog()
+    how = ['Country','Name','Provider','site id','xmltv id']
+    index = dialog.select('New xmltv id', how)
+    if index == -1:
+        return
+    channels = plugin.get_storage('channels')
+    channel_list = []
+    for c in channels:
+        order = channels[c]
+        (country,name,site,site_id,xmltv_id) = c.split("|")
+        channel_list.append((country,name,site,site_id,xmltv_id,order))
+    sorted_channels = sorted(channel_list, key=lambda c: c[index]) #TODO how
+    i = 0
+    for (country,name,site,site_id,xmltv_id,order) in sorted_channels:
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        channels[id] = i
+        i = i + 1
+    xbmc.executebuiltin('Container.Refresh')
+
 @plugin.route('/channels')
 def channels():
     channels = plugin.get_storage('channels')
     items = []
-    for id in sorted(channels):
+    sorted_ids = sorted(channels.items(), key=operator.itemgetter(1))
+    for (id,order) in sorted_ids:
         (country,name,site,site_id,xmltv_id) = id.split("|")
         label = "%s - %s - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
         context_items = []
         context_items.append(('Rename Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_channel', id=id))))
         context_items.append(('Rename xmltv id', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_id', id=id))))
+        context_items.append(('Sort', 'XBMC.RunPlugin(%s)' % (plugin.url_for('sort_channels'))))
         items.append(
         {
             'label': label,
@@ -189,7 +213,9 @@ def write_config():
     else:
         xmltv = 'special://profile/addon_data/script.webgrab/webgrab/%s' % xmltv_name
     f.write('<filename>%s</filename>\n' % xbmc.translatePath(xmltv))
-    for c in sorted(channels):
+    sorted_ids = sorted(channels.items(), key=operator.itemgetter(1))
+    for (id,order) in sorted_ids:
+    #for c in sorted(channels):
         (country,name,site,site_id,xmltv_id) = id.split("|")
         xml = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
         str = "%s\n" % xml
