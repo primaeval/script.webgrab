@@ -123,6 +123,7 @@ def countries():
             'path': plugin.url_for('country', country=dir),
             'thumbnail':get_icon_path('settings'),
         })
+    sorted_items = sorted(items, key=lambda item: remove_formatting(item['label']))
     return items
 
 @plugin.route('/rename_id/<id>')
