@@ -42,6 +42,16 @@ def download_ini_pack():
     except:
         return
 
+@plugin.route('/toggle_hide/<country>/<site>/<site_id>/<xmltv_id>/<name>')
+def toggle_hide(country,site,site_id,xmltv_id,name):
+    channels = plugin.get_storage('hidden_channels')
+    id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+    if id in channels:
+        del(channels[id])
+    else:
+        channels[id] = -1
+    xbmc.executebuiltin('Container.Refresh')        
+        
 @plugin.route('/toggle/<country>/<site>/<site_id>/<xmltv_id>/<name>')
 def toggle(country,site,site_id,xmltv_id,name):
     channels = plugin.get_storage('channels')
@@ -208,12 +218,17 @@ def move_channel(id):
 @plugin.route('/channels')
 def channels():
     channels = plugin.get_storage('channels')
+    hidden_channels = plugin.get_storage('hidden_channels')
     items = []
     sorted_ids = sorted(channels.items(), key=operator.itemgetter(1))
     for (id,order) in sorted_ids:
         (country,name,site,site_id,xmltv_id) = id.split("|")
-        label = "%s - [COLOR yellow]%s[/COLOR] - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
+        if id in hidden_channels:
+            label = "%s - [COLOR grey]%s[/COLOR] - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
+        else:
+            label = "%s - [COLOR yellow]%s[/COLOR] - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
         context_items = []
+        context_items.append(('Delete Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('toggle',country=country,site=site,site_id=site_id,xmltv_id=xmltv_id,name=name))))
         context_items.append(('Move', 'XBMC.RunPlugin(%s)' % (plugin.url_for('move_channel', id=id))))
         context_items.append(('Rename Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_channel', id=id))))
         context_items.append(('Rename xmltv id', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_id', id=id))))
@@ -221,7 +236,7 @@ def channels():
         items.append(
         {
             'label': label,
-            'path': plugin.url_for('toggle',country=country,site=site,site_id=site_id,xmltv_id=xmltv_id,name=name),
+            'path': plugin.url_for('toggle_hide',country=country,site=site,site_id=site_id,xmltv_id=xmltv_id,name=name),
             'thumbnail':get_icon_path('settings'),
             'context_menu': context_items,
         })
@@ -234,6 +249,7 @@ def write_config():
     xbmcvfs.mkdirs(folder)
     f = xbmcvfs.File(file, 'wb')
     channels = plugin.get_storage('channels')
+    hidden_channels = plugin.get_storage('hidden_channels')
     f.write('<settings>\n')
     xmltv_output_folder = plugin.get_setting('xmltv_output_folder')
     xmltv_name = plugin.get_setting('xmltv_name')
@@ -249,7 +265,8 @@ def write_config():
         (country,name,site,site_id,xmltv_id) = id.split("|")
         xml = '<channel update="i" site="%s" site_id="%s" xmltv_id="%s">%s</channel>' % (site,site_id,xmltv_id,name)
         str = "%s\n" % xml
-        f.write(str)
+        if id not in hidden_channels:
+            f.write(str)
     f.write('</settings>\n')
     f.close()
     inis = {}
