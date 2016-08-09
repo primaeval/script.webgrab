@@ -229,10 +229,10 @@ def channels():
             label = "%s - [COLOR yellow]%s[/COLOR] - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
         context_items = []
         context_items.append(('Delete Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('toggle',country=country,site=site,site_id=site_id,xmltv_id=xmltv_id,name=name))))
-        context_items.append(('Move', 'XBMC.RunPlugin(%s)' % (plugin.url_for('move_channel', id=id))))
+        context_items.append(('Move Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('move_channel', id=id))))
         context_items.append(('Rename Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_channel', id=id))))
         context_items.append(('Rename xmltv id', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_id', id=id))))
-        context_items.append(('Sort', 'XBMC.RunPlugin(%s)' % (plugin.url_for('sort_channels'))))
+        context_items.append(('Sort Channels', 'XBMC.RunPlugin(%s)' % (plugin.url_for('sort_channels'))))
         items.append(
         {
             'label': label,
