@@ -260,6 +260,11 @@ def write_config():
         xmltv = "%s%s" % (xmltv_output_folder,xmltv_name)
     else:
         xmltv = 'special://profile/addon_data/script.webgrab/webgrab/%s' % xmltv_name
+    timespan = plugin.get_setting('timespan')
+    if not timespan:
+        timespan = "1"
+    timespan = int(timespan) - 1
+    f.write('<timespan>%d</timespan>\n' % timespan)
     f.write('<filename>%s</filename>\n' % xbmc.translatePath(xmltv))
     sorted_ids = sorted(channels.items(), key=operator.itemgetter(1))
     for (id,order) in sorted_ids:

@@ -4,5 +4,6 @@
 <setting id="config_output_folder" label="Config Output Folder" type="folder" default="" />
 <setting id="xmltv_output_folder" label="xmltv Output Folder" type="folder" default="" />
 <setting id="xmltv_name" label="xmltv File Name" type="text" default="xmltv.xml" />
+<setting label="Days" type="number" id="timespan" default="1"/>
 </category>
 </settings>
