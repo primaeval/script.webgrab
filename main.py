@@ -247,6 +247,7 @@ def write_config():
     folder = 'special://profile/addon_data/script.webgrab/webgrab/config'
     file = '%s/%s' % (folder,'WebGrab++.config.xml')
     xbmcvfs.mkdirs(folder)
+    xbmcvfs.copy(file, file+'.last')
     f = xbmcvfs.File(file, 'wb')
     channels = plugin.get_storage('channels')
     hidden_channels = plugin.get_storage('hidden_channels')
