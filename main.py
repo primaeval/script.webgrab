@@ -134,7 +134,7 @@ def countries():
             'thumbnail':get_icon_path('settings'),
         })
     sorted_items = sorted(items, key=lambda item: remove_formatting(item['label']))
-    return items
+    return sorted_items
 
 @plugin.route('/rename_id/<id>')
 def rename_id(id):
