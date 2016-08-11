@@ -7,19 +7,22 @@
 <setting id="xmltv_output_folder" label="xmltv Output Folder <filename>" type="folder" default="" />
 <setting id="xmltv_name" label="xmltv File Name <filename>" type="text" default="xmltv.xml" />
 <setting type="sep"/>
-<setting label="Days <timespan>" type="number" id="timespan" default="1"/>
+<setting label="Days <timespan>" type="number" id="timespan" default="2"/>
+<setting type="sep"/>
+<setting label="Update <update>" type="enum" id="update" values="default|incremental|light|smart|full"/>
 <setting type="sep"/>
 <setting label="Proxy <proxy>" type="text" id="proxy" default=""/>
 <setting label="user <proxy>" type="text" id="proxy_user" default=""/>
 <setting label="password <proxy>" type="text" id="proxy_password" default=""/>
-<setting type="sep"/>
-<setting label="User Agent <user-agent>" type="text" id="user_agent" default=""/>
-<setting type="sep"/>
-<setting id="logging" type="enum" label="Logging <logging>" values="on|off" />
-<setting type="sep"/>
-<setting id="mode" type="select" label="Mode <mode>" values="default|debug|measure|nomark|verify|wget" default="0"/>
 <setting type="lsep" label="Postprocess <postprocess>" />
 <setting id="mdb" type="bool" label="mdb <postprocess>" default="false"/>
+<setting id="mdb_grab" type="bool" label="mdb grab <postprocess>" default="false"/>
+<setting id="mdb_run" type="bool" label="mdb run <postprocess>" default="false"/>
+<setting type="lsep" label="Postprocess <postprocess>" />
 <setting id="rex" type="bool" label="rex <postprocess>" default="false"/>
+<setting id="rex_grab" type="bool" label="rex grab <postprocess>" default="false"/>
+<setting id="rex_run" type="bool" label="rex run <postprocess>" default="false"/>
+<setting type="lsep" label="Postprocess <postprocess>" />
+<setting label="User Agent <user-agent>" type="text" id="user_agent" default=""/>
 </category>
 </settings>

@@ -50,8 +50,8 @@ def toggle_hide(country,site,site_id,xmltv_id,name):
         del(channels[id])
     else:
         channels[id] = -1
-    xbmc.executebuiltin('Container.Refresh')        
-        
+    xbmc.executebuiltin('Container.Refresh')
+
 @plugin.route('/toggle/<country>/<site>/<site_id>/<xmltv_id>/<name>')
 def toggle(country,site,site_id,xmltv_id,name):
     channels = plugin.get_storage('channels')
@@ -228,7 +228,7 @@ def channels():
         else:
             label = "%s - [COLOR yellow]%s[/COLOR] - %s (%s) [%s]" % (country,name,site,site_id,xmltv_id)
         context_items = []
-        context_items.append(('Sort Channels', 'XBMC.RunPlugin(%s)' % (plugin.url_for('sort_channels'))))        
+        context_items.append(('Sort Channels', 'XBMC.RunPlugin(%s)' % (plugin.url_for('sort_channels'))))
         context_items.append(('Move Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('move_channel', id=id))))
         context_items.append(('Rename Channel', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_channel', id=id))))
         context_items.append(('Rename xmltv id', 'XBMC.RunPlugin(%s)' % (plugin.url_for('rename_id', id=id))))
@@ -265,6 +265,34 @@ def write_config():
         timespan = "1"
     timespan = int(timespan) - 1
     f.write('<timespan>%d</timespan>\n' % timespan)
+
+    update = plugin.get_setting('update')
+    updates = ['','i','l','s','f']
+    f.write('<update>%s</update>\n' % updates[int(update)])
+
+    proxy = plugin.get_setting('proxy')
+    if proxy:
+        proxy_user = plugin.get_setting('proxy_user')
+        proxy_password = plugin.get_setting('proxy_password')
+        f.write('<proxy password="%s" user="%s">%s</proxy>\n' % (proxy,proxy_password,proxy_user))
+
+    mdb = plugin.get_setting('mdb')
+    if mdb == "true":
+        mdb_grab = plugin.get_setting('mdb_grab')
+        mdb_run = plugin.get_setting('mdb_run')
+        f.write('<postprocess run="%s" grab="%s">mdb</postprocess>\n' % (mdb_run,mdb_grab))
+
+    rex = plugin.get_setting('rex')
+    if rex == "true":
+        rex_grab = plugin.get_setting('rex_grab')
+        rex_run = plugin.get_setting('rex_run')
+        f.write('<postprocess run="%s" grab="%s">rex</postprocess>\n' % (rex_run,rex_grab))
+
+    user_agent = plugin.get_setting('user_agent')
+    if user_agent:
+        f.write('<user-agent>%s</user-agent>\n' % (user_agent))
+
+
     f.write('<filename>%s</filename>\n' % xbmc.translatePath(xmltv))
     sorted_ids = sorted(channels.items(), key=operator.itemgetter(1))
     for (id,order) in sorted_ids:
