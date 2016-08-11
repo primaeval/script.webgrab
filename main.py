@@ -175,7 +175,10 @@ def sort_channels():
         order = channels[c]
         (country,name,site,site_id,xmltv_id) = c.split("|")
         channel_list.append((country,name,site,site_id,xmltv_id,order))
-    sorted_channels = sorted(channel_list, key=lambda c: c[index]) #TODO how
+    second_index = 1
+    if index == 1:
+        second_index = 0
+    sorted_channels = sorted(channel_list, key=lambda c: (c[index],c[second_index]))
     i = 0
     for (country,name,site,site_id,xmltv_id,order) in sorted_channels:
         id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
