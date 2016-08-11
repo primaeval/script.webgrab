@@ -331,7 +331,24 @@ def copy_config():
             output = "%s%s" % (output_folder,f)
             xbmcvfs.copy(input,output)
 
+@plugin.route('/site_ini_version')
+def site_ini_version():
+    path = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack'
+    dirs, files = xbmcvfs.listdir(path)
+    log(files)
+    f = [f for f in files if f.startswith('Site')]
+    log(f)
+    dialog = xbmcgui.Dialog()
+    dialog.select('Site Ini Pack Version', f)
 
+@plugin.route('/show_log')
+def show_log():
+    path = 'special://profile/addon_data/script.webgrab/webgrab/config/WebGrab++.log.txt'
+    f = xbmcvfs.File(path,"r")
+    data = f.read()
+    lines = data.splitlines()
+    dialog = xbmcgui.Dialog()
+    dialog.select('WebGrab++.log.txt', lines)
 
 @plugin.route('/')
 def index():
@@ -370,6 +387,18 @@ def index():
     {
         'label': 'Copy Config to Output Folder',
         'path': plugin.url_for('copy_config'),
+        'thumbnail':get_icon_path('settings'),
+    })
+    items.append(
+    {
+        'label': 'Show Site Ini Version',
+        'path': plugin.url_for('site_ini_version'),
+        'thumbnail':get_icon_path('settings'),
+    })
+    items.append(
+    {
+        'label': 'Show Webgrab+Plus Log',
+        'path': plugin.url_for('show_log'),
         'thumbnail':get_icon_path('settings'),
     })
     return items
