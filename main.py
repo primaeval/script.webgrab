@@ -274,7 +274,7 @@ def write_config():
     if proxy:
         proxy_user = plugin.get_setting('proxy_user')
         proxy_password = plugin.get_setting('proxy_password')
-        f.write('<proxy password="%s" user="%s">%s</proxy>\n' % (proxy,proxy_password,proxy_user))
+        f.write('<proxy password="%s" user="%s">%s</proxy>\n' % (proxy_password,proxy_user,proxy))
 
     mdb = plugin.get_setting('mdb')
     if mdb == "true":
