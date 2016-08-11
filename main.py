@@ -267,6 +267,8 @@ def write_config():
     f.write('<timespan>%d</timespan>\n' % timespan)
 
     update = plugin.get_setting('update')
+    if not update:
+        update = "0"
     updates = ['','i','l','s','f']
     f.write('<update>%s</update>\n' % updates[int(update)])
 

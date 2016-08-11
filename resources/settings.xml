@@ -9,7 +9,7 @@
 <setting type="sep"/>
 <setting label="Days <timespan>" type="number" id="timespan" default="2"/>
 <setting type="sep"/>
-<setting label="Update <update>" type="enum" id="update" values="default|incremental|light|smart|full"/>
+<setting label="Update <update>" type="enum" id="update" values="default|incremental|light|smart|full" default="0"/>
 <setting type="sep"/>
 <setting label="Proxy <proxy>" type="text" id="proxy" default=""/>
 <setting label="user <proxy>" type="text" id="proxy_user" default=""/>
