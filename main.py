@@ -207,6 +207,8 @@ def move_channel(id):
     order = channels[id]
     (country,name,site,site_id,xmltv_id) = id.split("|")
     oldindex = sorted_channels.index((country,name,site,site_id,xmltv_id,order))
+    if oldindex < index:
+        index = index - 1
     sorted_channels.insert(index, sorted_channels.pop(oldindex))
     channels.clear()
 
