@@ -1,19 +1,25 @@
 <settings>
-<category label="Data">
+<category label="Paths">
 <setting id="exe" label="Webgrab+Plus Program" type="file" default="" />
 <setting id="config_output_folder" label="Config Output Folder" type="folder" default="" />
-<setting id="xmltv_output_folder" label="xmltv Output Folder" type="folder" default="" />
-<setting id="xmltv_name" label="xmltv File Name" type="text" default="xmltv.xml" />
 </category>
 <category label="Config">
+<setting id="xmltv_output_folder" label="xmltv Output Folder <filename>" type="folder" default="" />
+<setting id="xmltv_name" label="xmltv File Name <filename>" type="text" default="xmltv.xml" />
+<setting type="sep"/>
 <setting label="Days <timespan>" type="number" id="timespan" default="1"/>
-<setting sep/>
+<setting type="sep"/>
 <setting label="Proxy <proxy>" type="text" id="proxy" default=""/>
-<setting label="user" type="text" id="proxy_user" default=""/>
-<setting label="password" type="text" id="proxy_password" default=""/>
-<setting sep/>
+<setting label="user <proxy>" type="text" id="proxy_user" default=""/>
+<setting label="password <proxy>" type="text" id="proxy_password" default=""/>
+<setting type="sep"/>
 <setting label="User Agent <user-agent>" type="text" id="user_agent" default=""/>
-<setting sep/>
-<setting id="logging" type="select" label="Logging <logging>" values="on|off" />
+<setting type="sep"/>
+<setting id="logging" type="enum" label="Logging <logging>" values="on|off" />
+<setting type="sep"/>
+<setting id="mode" type="select" label="Mode <mode>" values="default|debug|measure|nomark|verify|wget" default="0"/>
+<setting type="lsep" label="Postprocess <postprocess>" />
+<setting id="mdb" type="bool" label="mdb <postprocess>" default="false"/>
+<setting id="rex" type="bool" label="rex <postprocess>" default="false"/>
 </category>
 </settings>
