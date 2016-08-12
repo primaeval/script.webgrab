@@ -247,6 +247,11 @@ def channels():
         })
     return items
 
+@plugin.route('/write_and_copy_config')
+def write_and_copy_config():
+    write_config()
+    copy_config()
+
 @plugin.route('/write_config')
 def write_config():
     folder = 'special://profile/addon_data/script.webgrab/webgrab/config'
@@ -378,14 +383,8 @@ def index():
     })
     items.append(
     {
-        'label': 'Write Config File',
-        'path': plugin.url_for('write_config'),
-        'thumbnail':get_icon_path('settings'),
-    })
-    items.append(
-    {
-        'label': 'Copy Config to Output Folder',
-        'path': plugin.url_for('copy_config'),
+        'label': 'Output Config Files',
+        'path': plugin.url_for('write_and_copy_config'),
         'thumbnail':get_icon_path('settings'),
     })
     items.append(
