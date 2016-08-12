@@ -1,4 +1,4 @@
-from subprocess import call
+from subprocess import Popen
 from xbmcswift2 import Plugin
 import StringIO
 import os
@@ -324,7 +324,7 @@ def write_config():
 def run_webgrab():
     exe = plugin.get_setting('exe')
     path = xbmc.translatePath('special://profile/addon_data/script.webgrab/webgrab/config')
-    status = call([exe,path],shell=False)
+    status = Popen([exe,path])
     return
 
 @plugin.route('/copy_config')
