@@ -350,7 +350,8 @@ def site_ini_version():
 
 @plugin.route('/show_log')
 def show_log():
-    path = 'special://profile/addon_data/script.webgrab/webgrab/config/WebGrab++.log.txt'
+    folder = plugin.get_setting('config_output_folder')
+    path = os.path.join(xbmc.translatePath(folder),'WebGrab++.log.txt')
     f = xbmcvfs.File(path,"r")
     data = f.read()
     lines = data.splitlines()
@@ -386,26 +387,26 @@ def index():
     })
     items.append(
     {
-        'label': 'Run Webgrab',
-        'path': plugin.url_for('run_webgrab'),
-        'thumbnail':get_icon_path('settings'),
-    })
-    items.append(
-    {
         'label': 'Copy Config to Output Folder',
         'path': plugin.url_for('copy_config'),
         'thumbnail':get_icon_path('settings'),
     })
     items.append(
     {
-        'label': 'Show Site Ini Version',
-        'path': plugin.url_for('site_ini_version'),
+        'label': 'Run Webgrab',
+        'path': plugin.url_for('run_webgrab'),
         'thumbnail':get_icon_path('settings'),
     })
     items.append(
     {
         'label': 'Show Webgrab+Plus Log',
         'path': plugin.url_for('show_log'),
+        'thumbnail':get_icon_path('settings'),
+    })
+    items.append(
+    {
+        'label': 'Show Site Ini Version',
+        'path': plugin.url_for('site_ini_version'),
         'thumbnail':get_icon_path('settings'),
     })
     return items
