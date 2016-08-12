@@ -322,10 +322,7 @@ def write_config():
 
 @plugin.route('/run_webgrab')
 def run_webgrab():
-    exe = plugin.get_setting('exe')
-    path = xbmc.translatePath('special://profile/addon_data/script.webgrab/webgrab/config')
-    status = Popen([exe,path])
-    return
+    xbmc.executebuiltin('XBMC.RunScript(special://home/addons/script.webgrab/run.py)')
 
 @plugin.route('/copy_config')
 def copy_config():
