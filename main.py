@@ -345,9 +345,7 @@ def copy_config():
 def site_ini_version():
     path = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack'
     dirs, files = xbmcvfs.listdir(path)
-    log(files)
     f = [f for f in files if f.startswith('Site')]
-    log(f)
     dialog = xbmcgui.Dialog()
     dialog.select('Site Ini Pack Version', f)
 
@@ -361,23 +359,19 @@ def show_log():
     dialog = xbmcgui.Dialog()
     dialog.select('WebGrab++.log.txt', lines)
 
+
 @plugin.route('/tv_com')
 def tv_com():
     dialog = xbmcgui.Dialog()
     zip_code = dialog.input('Zip code', "10001")
     if not zip_code:
         return
-
     s = requests.Session()
     r = s.get("http://www.tv.com/listings/")
-
     csrftoken = r.cookies['csrftoken']
-
     r = s.get("http://www.tv.com/listings/settings_refresh/%s" % zip_code)
-
     data = r.content
     match = re.findall(r'<option value=\\"(.*?)\\" data-provider=\\"(.*?)\\" data-provider_type=\\"(.*?)\\">\\r\\n(.*?)\\',data,flags=(re.DOTALL | re.MULTILINE))
-
     labels = []
     providers = []
     for (id,provider,type,name) in match:
@@ -389,7 +383,6 @@ def tv_com():
     if index == -1:
         return
     headend = providers[index][0]
-
     data={
         "csrfmiddlewaretoken":csrftoken,
         "zip":zip_code,
@@ -400,8 +393,11 @@ def tv_com():
     cookies = r.cookies
 
     f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/USA/tv.com.cookies.txt',"wb")
+    f.write('# Cookies for domains related to tv.com.\n')
+    f.write('# This content may be pasted into a cookies.txt file and used by wget\n')
+    f.write('# Example:  wget -x --load-cookies cookies.txt http://www.tv.com/listings/\n')
+    f.write('#\n')
     for c in cookies:
-        log(c)
         line = "%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
             c.domain,
             str.upper(str(c.domain_specified)),
@@ -417,24 +413,23 @@ def tv_com():
     'special://profile/addon_data/script.webgrab/webgrab/config/tv.com.cookies.txt')
 
     data = r.content
-    data = HTMLParser.HTMLParser().unescape(data.encode("utf-8"))
     match = re.findall(r'<a href="/listings/station/(.*?)".*?title="(.*?)".*?>(.*?)<',data,flags=(re.DOTALL | re.MULTILINE))
     labels = []
     channels = list(set(match))
     channels = sorted(channels, key=lambda c: (c[1],c[0]))
+    channels = [(c[0], re.sub('&','&amp;',c[1]),c[2]) for c in channels]
 
     f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/USA/tv.com.channels.xml',"wb")
     f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
     f.write('<site generator-info-name="WebGrab+Plus/w MDB &amp; REX Postprocess -- version V1.56.6 -- Jan van Straaten" site="tv.com">\n')
     f.write('<channels>\n')
-
     for c in channels:
         id = c[0]
+        station = c[2]
+        station =  station
         name = "%s (%s)" % (c[1], c[2])
-        #name = HTMLParser.HTMLParser().unescape(name)
         xmltv = name
         f.write('<channel update="i" site="tv.com" site_id="%s" xmltv_id="%s">%s</channel>\n' % (id,xmltv,name))
-
     f.write('</channels>\n')
     f.write('</site>\n')
 
@@ -444,7 +439,6 @@ def tv_com():
         return
     if index == -1:
         return
-    log(index)
 
     channel_storage = plugin.get_storage('channels')
     for i in index:
@@ -460,6 +454,18 @@ def tv_com():
         else:
             channel_storage[id] = -1
 
+@plugin.route('/lab')
+def lab():
+    items = []
+    items.append(
+    {
+        'label': 'tv.com',
+        'path': plugin.url_for('tv_com'),
+        'thumbnail':get_icon_path('settings'),
+    })
+    return items
+
+
 @plugin.route('/')
 def index():
     items = []
@@ -469,12 +475,7 @@ def index():
         'path': plugin.url_for('download_ini_pack'),
         'thumbnail':get_icon_path('settings'),
     })
-    items.append(
-    {
-        'label': 'tv.com',
-        'path': plugin.url_for('tv_com'),
-        'thumbnail':get_icon_path('settings'),
-    })
+
     items.append(
     {
         'label': 'Countries',
@@ -509,6 +510,12 @@ def index():
     {
         'label': 'Show Site Ini Version',
         'path': plugin.url_for('site_ini_version'),
+        'thumbnail':get_icon_path('settings'),
+    })
+    items.append(
+    {
+        'label': 'Lab',
+        'path': plugin.url_for('lab'),
         'thumbnail':get_icon_path('settings'),
     })
     return items
