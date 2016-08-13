@@ -8,6 +8,7 @@ import sys
 import xbmc,xbmcaddon,xbmcvfs,xbmcgui,xbmcplugin
 import zipfile
 import operator
+import HTMLParser
 
 plugin = Plugin()
 
@@ -366,40 +367,28 @@ def tv_com():
     zip_code = dialog.input('Zip code', "10001")
     if not zip_code:
         return
-    #zip_code = "10001"
+
     s = requests.Session()
     r = s.get("http://www.tv.com/listings/")
-    log(r.cookies)
+
     csrftoken = r.cookies['csrftoken']
-    log(csrftoken)
-    log(r.headers)
+
     r = s.get("http://www.tv.com/listings/settings_refresh/%s" % zip_code)
-    log(r.cookies)
-    log(r.headers)
-    log(r.content)
-    #r = s.get("http://www.tv.com/listings/settings_panel/")
-    #log(r.cookies)
-    #log(r.headers)
-    #log(r.content)
+
     data = r.content
     match = re.findall(r'<option value=\\"(.*?)\\" data-provider=\\"(.*?)\\" data-provider_type=\\"(.*?)\\">\\r\\n(.*?)\\',data,flags=(re.DOTALL | re.MULTILINE))
-    log(match)
+
     labels = []
     providers = []
     for (id,provider,type,name) in match:
-        log ((id,provider,type,name))
         label = '(%s) %s' % (type,name)
         providers.append((id,provider,type,name,label))
     providers = sorted(providers, key=lambda c: (c[2],c[3]))
-    log(providers)
     labels = [p[4] for p in providers]
-
-
     index = dialog.select('Choose Provider', labels)
     if index == -1:
         return
     headend = providers[index][0]
-    log(headend)
 
     data={
         "csrfmiddlewaretoken":csrftoken,
@@ -408,13 +397,9 @@ def tv_com():
         "Submit":"Submitting..."
     }
     r = s.post("http://www.tv.com/listings/",data=data)
-    log(r.cookies)
     cookies = r.cookies
-    #log(cookie)
-    #log(cookie.get('COUNTRY'))
-    
-    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/USA/tv.com.cookies.txt.test',"wb")
-    #f.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % (cookie))
+
+    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/USA/tv.com.cookies.txt',"wb")
     for c in cookies:
         log(c)
         line = "%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
@@ -427,23 +412,18 @@ def tv_com():
             c.value,
         )
         f.write(line)
+    f.close()
+    xbmcvfs.copy('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/USA/tv.com.cookies.txt',
+    'special://profile/addon_data/script.webgrab/webgrab/config/tv.com.cookies.txt')
 
-    
-    return
-    log(r.headers)
-    log(r.content)
     data = r.content
+    data = HTMLParser.HTMLParser().unescape(data.encode("utf-8"))
     match = re.findall(r'<a href="/listings/station/(.*?)".*?title="(.*?)".*?>(.*?)<',data,flags=(re.DOTALL | re.MULTILINE))
-    log(match)
     labels = []
     channels = list(set(match))
     channels = sorted(channels, key=lambda c: (c[1],c[0]))
-    for (id,name,station) in channels:
-        log((name,id,station))
-    names = ["%s (%s) [%s]" % (c[1], c[2], c[0])  for c in channels]
-    index = dialog.multiselect('Add to Channels', names)
 
-    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/USA/tv.com.channels.xml.test',"wb")
+    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/USA/tv.com.channels.xml',"wb")
     f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
     f.write('<site generator-info-name="WebGrab+Plus/w MDB &amp; REX Postprocess -- version V1.56.6 -- Jan van Straaten" site="tv.com">\n')
     f.write('<channels>\n')
@@ -451,13 +431,35 @@ def tv_com():
     for c in channels:
         id = c[0]
         name = "%s (%s)" % (c[1], c[2])
+        #name = HTMLParser.HTMLParser().unescape(name)
         xmltv = name
         f.write('<channel update="i" site="tv.com" site_id="%s" xmltv_id="%s">%s</channel>\n' % (id,xmltv,name))
 
     f.write('</channels>\n')
     f.write('</site>\n')
-    
-    
+
+    names = ["%s (%s) [%s]" % (c[1], c[2], c[0])  for c in channels]
+    index = dialog.multiselect('Add to Channels', names)
+    if not index:
+        return
+    if index == -1:
+        return
+    log(index)
+
+    channel_storage = plugin.get_storage('channels')
+    for i in index:
+        c = channels[i]
+        country = "USA"
+        name = "%s (%s)" % (c[1],c[2])
+        site = "tv.com"
+        xmltv_id = name
+        site_id = c[0]
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        if id in channel_storage:
+            pass
+        else:
+            channel_storage[id] = -1
+
 @plugin.route('/')
 def index():
     items = []
