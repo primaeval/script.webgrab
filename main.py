@@ -366,9 +366,9 @@ def tv_com():
     zip_code = dialog.input('Zip code', "10001")
     if not zip_code:
         return
-    utc_offset = dialog.input('Enter UTC Offset', "UTC-05:00")
+    utc_offset = dialog.input('Enter UTC Offset (Cancel for Default UTC)', "UTC-05:00")
     if not utc_offset:
-        return
+        utc_offset = "UTC"
     s = requests.Session()
     r = s.get("http://www.tv.com/listings/")
     csrftoken = r.cookies['csrftoken']
@@ -496,7 +496,7 @@ def index():
     })
     items.append(
     {
-        'label': 'Channels',
+        'label': 'Selected Channels',
         'path': plugin.url_for('channels'),
         'thumbnail':get_icon_path('settings'),
     })
