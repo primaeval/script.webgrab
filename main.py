@@ -366,6 +366,9 @@ def tv_com():
     zip_code = dialog.input('Zip code', "10001")
     if not zip_code:
         return
+    utc_offset = dialog.input('Enter UTC Offset', "UTC-05:00")
+    if not utc_offset:
+        return
     s = requests.Session()
     r = s.get("http://www.tv.com/listings/")
     csrftoken = r.cookies['csrftoken']
@@ -432,6 +435,15 @@ def tv_com():
         f.write('<channel update="i" site="tv.com" site_id="%s" xmltv_id="%s">%s</channel>\n' % (id,xmltv,name))
     f.write('</channels>\n')
     f.write('</site>\n')
+    f.close()
+
+    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/USA/tv.com.ini',"rb")
+    data = f.read()
+    f.close()
+    data = re.sub(r'timezone=.*?\|','timezone=%s|' % utc_offset,data)
+    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/USA/tv.com.ini',"wb")
+    f.write(data)
+    f.close()
 
     names = ["%s (%s) [%s]" % (c[1], c[2], c[0])  for c in channels]
     index = dialog.multiselect('Add to Channels', names)
