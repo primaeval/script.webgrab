@@ -363,12 +363,16 @@ def show_log():
 @plugin.route('/tv_com')
 def tv_com():
     dialog = xbmcgui.Dialog()
-    zip_code = dialog.input('Zip code', "10001")
+    zip_code = plugin.get_setting('tv.com_zipcode') or '10001'
+    zip_code = dialog.input('Zip code', zip_code)
     if not zip_code:
         return
-    utc_offset = dialog.input('Enter UTC Offset (Cancel for Default UTC)', "UTC-05:00")
+    plugin.set_setting('tv.com_zipcode', zip_code)
+    utc_offset = plugin.get_setting('tv.com_timezone') or 'UTC-05:00'
+    utc_offset = dialog.input('Enter UTC Offset (Cancel for Default UTC)', utc_offset)
     if not utc_offset:
         utc_offset = "UTC"
+    plugin.set_setting('tv.com_timezone', utc_offset)
     s = requests.Session()
     r = s.get("http://www.tv.com/listings/")
     csrftoken = r.cookies['csrftoken']
