@@ -355,8 +355,7 @@ def show_log():
     path = os.path.join(xbmc.translatePath(folder),'WebGrab++.log.txt')
     f = xbmcvfs.File(path,"r")
     data = f.read()
-    cmd = 'XBMC.RunScript(script.toolbox,info=textviewer,header="WebGrab++.log.txt",text=%s)' % data
-    xbmc.executebuiltin(cmd)
+    xbmcgui.Dialog().textviewer(heading="WebGrab++.log.txt",text=data)
 
 @plugin.route('/tv_com')
 def tv_com():
