@@ -63,6 +63,31 @@ def toggle(country,site,site_id,xmltv_id,name):
         channels[id] = -1
     xbmc.executebuiltin('Container.Refresh')
 
+@plugin.route('/edit_timezone/<country>/<site>')
+def edit_timezone(country,site):
+    ini_name = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s/%s.ini' % (country,site)
+    setting = '%s.timezone' % site
+    site_offset = plugin.get_setting(setting)
+    f = xbmcvfs.File(ini_name,"rb")
+    data = f.read()
+    f.close()
+    match = re.search(r'timezone=(.*?)\|',data)
+    utc_offset = match.group(1)
+    utc_offset = site_offset or utc_offset
+    dialog = xbmcgui.Dialog()
+    utc_offset = dialog.input('Enter UTC Offset', utc_offset)
+    if not utc_offset:
+        return
+    plugin.set_setting(setting, utc_offset)
+
+    f = xbmcvfs.File(ini_name,"rb")
+    data = f.read()
+    f.close()
+    data = re.sub(r'timezone=.*?\|','timezone=%s|' % utc_offset,data)
+    f = xbmcvfs.File(ini_name,"wb")
+    f.write(data)
+    f.close()
+
 @plugin.route('/provider/<country>/<provider>')
 def provider(country,provider):
     channels = plugin.get_storage('channels')
@@ -105,11 +130,14 @@ def country(country):
             label = "[COLOR yellow]%s[/COLOR]" % provider
         else:
             label = provider
+        context_items = []
+        context_items.append(('Timezone Edit', 'XBMC.RunPlugin(%s)' % (plugin.url_for('edit_timezone',country=this_country,site=provider))))
         items.append(
         {
             'label': label,
             'path': plugin.url_for('provider', country=this_country, provider=provider),
             'thumbnail':get_icon_path('settings'),
+            'context_menu': context_items,
         })
     return items
 
