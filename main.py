@@ -413,7 +413,7 @@ def write_config():
             f = xbmcvfs.File(src,"rb")
             data = f.read()
             f.close()
-            data = re.sub(r'timezone=.*?\|','timezone=%s|' % utc_offset,data)
+            data = re.sub(r'timezone=.*?\|','timezone=%s|' % site_offset,data)
             f = xbmcvfs.File(src,"wb")
             f.write(data)
             f.close()
