@@ -119,11 +119,17 @@ def quick_add(country,provider):
     ids = []
     for (site,site_id,xmltv_id,name) in match:
         id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
-        if id not in channels:
-            ids.append((country,name,site,site_id,xmltv_id))
+        ids.append((country,name,site,site_id,xmltv_id))
 
     ids = sorted(ids, key=lambda c: c[1])
-    names = [i[1] for i in ids]
+    names = []
+    for (country,name,site,site_id,xmltv_id) in ids:
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        if id in channels:
+            label = "[COLOR yellow]%s[/COLOR]" % name
+        else:
+            label = name
+        names.append(label)
     dialog = xbmcgui.Dialog()
     index = dialog.multiselect('Add to Channels', names)
     if not index:
