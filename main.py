@@ -67,30 +67,20 @@ def toggle(country,site,site_id,xmltv_id,name):
 def edit_timezone(country,site):
     ini_name = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s/%s.ini' % (country,site)
     setting = '%s.timezone' % site
-    default_setting = '%s.timezone.default' % site
     site_offset = plugin.get_setting(setting)
-    default_site_offset = plugin.get_setting(default_setting)
     f = xbmcvfs.File(ini_name,"rb")
     data = f.read()
     f.close()
     match = re.search(r'timezone=(.*?)\|',data)
-    utc_offset = match.group(1)
-    if not default_site_offset:
-        plugin.set_setting(default_setting, utc_offset)
-    utc_offset = site_offset or utc_offset
+    default_utc_offset = match.group(1)
+    utc_offset = site_offset or default_utc_offset
     dialog = xbmcgui.Dialog()
-    utc_offset = dialog.input('Enter UTC Offset (blank to reset default)', utc_offset)
-    plugin.set_setting(setting, utc_offset)
+    utc_offset = dialog.input('Enter UTC Offset (cancel to reset)', utc_offset)
     if not utc_offset:
-        utc_offset = plugin.get_setting(default_setting)
+        plugin.set_setting(setting, default_utc_offset)
+    else:
+        plugin.set_setting(setting, utc_offset)
 
-    f = xbmcvfs.File(ini_name,"rb")
-    data = f.read()
-    f.close()
-    data = re.sub(r'timezone=.*?\|','timezone=%s|' % utc_offset,data)
-    f = xbmcvfs.File(ini_name,"wb")
-    f.write(data)
-    f.close()
 
 @plugin.route('/provider/<country>/<provider>')
 def provider(country,provider):
