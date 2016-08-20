@@ -112,6 +112,65 @@ def provider(country,provider):
     sorted_items = sorted(items, key=lambda item: remove_formatting(item['label']))
     return sorted_items
 
+@plugin.route('/quick_add/<country>/<provider>')
+def quick_add(country,provider):
+    channels = plugin.get_storage('channels')
+    folder = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s' % country
+    channel_file = "%s/%s.channels.xml" % (folder,provider)
+    items = []
+    f = xbmcvfs.File(channel_file,"rb")
+    data = f.read()
+    match = re.findall(r'<channel update="i" site="(.*?)" site_id="(.*?)" xmltv_id="(.*?)">(.*?)</channel>',data)
+
+    ids = []
+    for (site,site_id,xmltv_id,name) in match:
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        if id not in channels:
+            ids.append((country,name,site,site_id,xmltv_id))
+
+    ids = sorted(ids, key=lambda c: c[1])
+    names = [i[1] for i in ids]
+    dialog = xbmcgui.Dialog()
+    index = dialog.multiselect('Add to Channels', names)
+    if not index:
+        return
+    if index == -1:
+        return
+    for i in index:
+        (country,name,site,site_id,xmltv_id) = ids[i]
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        channels[id] = -1
+
+@plugin.route('/quick_remove/<country>/<provider>')
+def quick_remove(country,provider):
+    channels = plugin.get_storage('channels')
+    folder = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/%s' % country
+    channel_file = "%s/%s.channels.xml" % (folder,provider)
+    items = []
+    f = xbmcvfs.File(channel_file,"rb")
+    data = f.read()
+    match = re.findall(r'<channel update="i" site="(.*?)" site_id="(.*?)" xmltv_id="(.*?)">(.*?)</channel>',data)
+
+    ids = []
+    for (site,site_id,xmltv_id,name) in match:
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        if id in channels:
+            ids.append((country,name,site,site_id,xmltv_id))
+
+    ids = sorted(ids, key=lambda c: c[1])
+    names = [i[1] for i in ids]
+    dialog = xbmcgui.Dialog()
+    index = dialog.multiselect('Add to Channels', names)
+    if not index:
+        return
+    if index == -1:
+        return
+    for i in index:
+        (country,name,site,site_id,xmltv_id) = ids[i]
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        del(channels[id])
+
+
 @plugin.route('/country/<country>')
 def country(country):
     this_country = country
@@ -132,6 +191,8 @@ def country(country):
             label = provider
         context_items = []
         context_items.append(('Timezone Edit', 'XBMC.RunPlugin(%s)' % (plugin.url_for('edit_timezone',country=this_country,site=provider))))
+        context_items.append(('Quick Add Channels', 'XBMC.RunPlugin(%s)' % (plugin.url_for('quick_add',country=this_country,provider=provider))))
+        context_items.append(('Quick Remove Channels', 'XBMC.RunPlugin(%s)' % (plugin.url_for('quick_remove',country=this_country,provider=provider))))
         items.append(
         {
             'label': label,
