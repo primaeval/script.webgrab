@@ -192,6 +192,7 @@ def country(country):
         context_items = []
         context_items.append(('Timezone Edit', 'XBMC.RunPlugin(%s)' % (plugin.url_for('edit_timezone',country=this_country,site=provider))))
         context_items.append(('Remove Channels', 'XBMC.RunPlugin(%s)' % (plugin.url_for('quick_remove',country=this_country,provider=provider))))
+        #TODO fix (('Toggle Channels', 'XBMC.RunPlugin(%s)' % (plugin.url_for('provider', country=this_country, provider=provider))))
         items.append(
         {
             'label': label,
