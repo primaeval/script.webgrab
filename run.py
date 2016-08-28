@@ -1,4 +1,4 @@
-from subprocess import call
+from subprocess import call, Popen
 import xbmcaddon,xbmcgui
 
 dialog = xbmcgui.Dialog()
@@ -13,7 +13,7 @@ dialog.notification("Webgrab+Plus Configurator","Starting")
 if LIBRE:
     status = call([exe])
 else:
-    status = call([exe,path])
+    status = Popen("%s %s" % (exe,path), shell=False)
 if status != 0:
     message = "Error %s" % status
 else:
