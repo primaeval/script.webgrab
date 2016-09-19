@@ -566,6 +566,99 @@ def tv_com():
         else:
             channel_storage[id] = -1
 
+@plugin.route('/directv_com')
+def directv_com():
+    dialog = xbmcgui.Dialog()
+    zip_code = plugin.get_setting('directv.com_zipcode') or '10001'
+    zip_code = dialog.input('Zip code', zip_code)
+    if not zip_code:
+        return
+    plugin.set_setting('directv.com_zipcode', zip_code)
+    utc_offset = plugin.get_setting('directv.com_timezone') or 'UTC-05:00'
+    utc_offset = dialog.input('Enter UTC Offset (Cancel for Default UTC)', utc_offset)
+    if not utc_offset:
+        utc_offset = "UTC"
+    plugin.set_setting('directv.com_timezone', utc_offset)
+    s = requests.Session()
+    r = s.get("https://www.directv.com/modal/zipcode")
+
+    r = s.get("https://www.directv.com/json/zipcode/%s" % zip_code)
+
+    cookies = s.cookies
+    r = s.get("https://www.directv.com/guide")
+
+    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/Networks/directv.com.cookies.txt',"wb")
+    f.write('# Cookies for domains related to directv.com.\n')
+    f.write('# This content may be pasted into a cookies.txt file and used by wget\n')
+    f.write('# Example:  wget -x --load-cookies cookies.txt http://www.directv.com/guide/\n')
+    f.write('#\n')
+    for c in cookies:
+        line = "%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (
+            c.domain,
+            str.upper(str(c.domain_specified)),
+            c.path,
+            str.upper(str(c.secure)),
+            int(c.expires or 0),
+            c.name,
+            c.value,
+        )
+        f.write(line)
+    f.close()
+    xbmcvfs.copy('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/Networks/directv.com.cookies.txt',
+    'special://profile/addon_data/script.webgrab/webgrab/config/directv.com.cookies.txt')
+
+
+    data = r.content
+    match = re.findall(r'"chName":"(.*?)".*?"chNum":(.*?),.*?"chCall":"(.*?)"',data,flags=(re.DOTALL | re.MULTILINE))
+    labels = []
+    channels = list(set(match))
+    channels = sorted(channels, key=lambda c: (c[0],c[2]))
+    channels = [(re.sub('&','&amp;',c[0]),c[1],re.sub('&','&amp;',c[2])) for c in channels]
+
+    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/Networks/directv.com.channels.xml',"wb")
+    f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    f.write('<site generator-info-name="WebGrab+Plus/w MDB &amp; REX Postprocess -- version V1.56.6 -- Jan van Straaten" site="directv.com">\n')
+    f.write('<channels>\n')
+    for c in channels:
+        id = c[1]
+        station = c[2]
+        station =  station
+        name = "%s (%s)" % (c[0], c[2])
+        xmltv = name
+        f.write('<channel update="i" site="directv.com" site_id="%s" xmltv_id="%s">%s</channel>\n' % (id,xmltv,name))
+    f.write('</channels>\n')
+    f.write('</site>\n')
+    f.close()
+
+    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/Networks/directv.com.ini',"rb")
+    data = f.read()
+    f.close()
+    data = re.sub(r'timezone=.*?\|','timezone=%s|' % utc_offset,data)
+    f = xbmcvfs.File('special://profile/addon_data/script.webgrab/webgrab/siteini.pack/Networks/directv.com.ini',"wb")
+    f.write(data)
+    f.close()
+
+    names = ["%s (%s) [%s]" % (c[0], c[2], c[1])  for c in channels]
+    index = dialog.multiselect('Add to Channels', names)
+    if not index:
+        return
+    if index == -1:
+        return
+
+    channel_storage = plugin.get_storage('channels')
+    for i in index:
+        c = channels[i]
+        country = "Networks"
+        name = "%s (%s)" % (c[0],c[2])
+        site = "directv.com"
+        xmltv_id = name
+        site_id = c[1]
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        if id in channel_storage:
+            pass
+        else:
+            channel_storage[id] = -1
+
 @plugin.route('/lab')
 def lab():
     items = []
@@ -573,6 +666,12 @@ def lab():
     {
         'label': 'tv.com',
         'path': plugin.url_for('tv_com'),
+        'thumbnail':get_icon_path('settings'),
+    })
+    items.append(
+    {
+        'label': 'directv.com',
+        'path': plugin.url_for('directv_com'),
         'thumbnail':get_icon_path('settings'),
     })
     return items
