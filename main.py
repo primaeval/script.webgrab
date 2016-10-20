@@ -445,6 +445,8 @@ def copy_config():
                     xbmcvfs.copy(input,output)
             else:
                 xbmcvfs.copy(input,output)
+            if f == "WebGrab++.config.xml":
+                xbmcvfs.copy(input,output)
 
 @plugin.route('/site_ini_version')
 def site_ini_version():
