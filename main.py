@@ -439,7 +439,12 @@ def copy_config():
         for f in files:
             input = "%s%s" % (input_folder,f)
             output = "%s%s" % (output_folder,f)
-            xbmcvfs.copy(input,output)
+            if plugin.get_setting('overwrite_ini') == 'false':
+                exists = xbmcvfs.exists(output)
+                if not exists:
+                    xbmcvfs.copy(input,output)
+            else:
+                xbmcvfs.copy(input,output)
 
 @plugin.route('/site_ini_version')
 def site_ini_version():

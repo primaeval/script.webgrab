@@ -2,27 +2,29 @@
 <category label="Paths">
 <setting id="exe" label="Webgrab+Plus Program" type="file" default="" />
 <setting id="config_output_folder" label="Config Output Folder" type="folder" default="" />
+<setting type="sep"/>
+<setting id="overwrite_ini" type="bool" label="Overwrite site.ini Files" default="true"/>
 </category>
 <category label="Config">
-<setting id="xmltv_output_folder" label="xmltv Output Folder <filename>" type="folder" default="" />
-<setting id="xmltv_name" label="xmltv File Name <filename>" type="text" default="xmltv.xml" />
+<setting id="xmltv_output_folder" label="xmltv Output Folder &lt;filename&gt;" type="folder" default="" />
+<setting id="xmltv_name" label="xmltv File Name &lt;filename&gt;" type="text" default="xmltv.xml" />
 <setting type="sep"/>
-<setting label="Days <timespan>" type="number" id="timespan" default="2"/>
+<setting label="Days &lt;timespan&gt;" type="number" id="timespan" default="2"/>
 <setting type="sep"/>
-<setting label="Update <update>" type="enum" id="update" values="default|incremental|light|smart|full" default="0"/>
+<setting label="Update &lt;update&gt;" type="enum" id="update" values="default|incremental|light|smart|full" default="0"/>
 <setting type="sep"/>
-<setting label="Proxy <proxy>" type="text" id="proxy" default=""/>
-<setting label="user <proxy>" type="text" id="proxy_user" default=""/>
-<setting label="password <proxy>" type="text" id="proxy_password" default=""/>
-<setting type="lsep" label="Postprocess <postprocess>" />
-<setting id="mdb" type="bool" label="mdb <postprocess>" default="false"/>
-<setting id="mdb_grab" type="bool" label="mdb grab <postprocess>" default="false"/>
-<setting id="mdb_run" type="bool" label="mdb run <postprocess>" default="false"/>
-<setting type="lsep" label="Postprocess <postprocess>" />
-<setting id="rex" type="bool" label="rex <postprocess>" default="false"/>
-<setting id="rex_grab" type="bool" label="rex grab <postprocess>" default="false"/>
-<setting id="rex_run" type="bool" label="rex run <postprocess>" default="false"/>
-<setting type="lsep" label="Postprocess <postprocess>" />
-<setting label="User Agent <user-agent>" type="text" id="user_agent" default=""/>
+<setting label="Proxy &lt;proxy&gt;" type="text" id="proxy" default=""/>
+<setting label="user &lt;proxy&gt;" type="text" id="proxy_user" default=""/>
+<setting label="password &lt;proxy>" type="text" id="proxy_password" default=""/>
+<setting type="lsep" label="Postprocess &lt;postprocess&gt;" />
+<setting id="mdb" type="bool" label="mdb &lt;postprocess&gt;" default="false"/>
+<setting id="mdb_grab" type="bool" label="mdb grab &lt;postprocess>" default="false"/>
+<setting id="mdb_run" type="bool" label="mdb run &lt;postprocess&gt;" default="false"/>
+<setting type="lsep" label="Postprocess &lt;postprocess&gt;" />
+<setting id="rex" type="bool" label="rex &lt;postprocess&gt;" default="false"/>
+<setting id="rex_grab" type="bool" label="rex grab &lt;postprocess&gt;" default="false"/>
+<setting id="rex_run" type="bool" label="rex run &lt;postprocess&gt;" default="false"/>
+<setting type="lsep" label="Postprocess &lt;postprocess&gt;" />
+<setting label="User Agent &lt;user-agent&gt;" type="text" id="user_agent" default=""/>
 </category>
 </settings>
