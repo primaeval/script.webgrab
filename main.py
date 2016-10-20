@@ -371,6 +371,7 @@ def write_config():
         update = "0"
     updates = ['','i','l','s','f']
     f.write('<update>%s</update>\n' % updates[int(update)])
+    f.write('<mode>n</mode>\n')
 
     proxy = plugin.get_setting('proxy')
     if proxy:
