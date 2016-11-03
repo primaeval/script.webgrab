@@ -582,6 +582,26 @@ def remove_formatting(label):
 
 @plugin.route('/download_ini_pack')
 def download_ini_pack():
+    dialog = xbmcgui.Dialog()
+    path = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack'
+    dirs, files = xbmcvfs.listdir(path)
+    f = [f for f in files if f.startswith('Site')]
+    f = sorted(f)
+    #SiteIni.Pack_2016.09.14_120630.txt
+    if f:
+        match = re.search('SiteIni.Pack_(.*?)\.(.*?)\.(.*?)_(.*?)\.txt',f[-1])
+        need_download = False
+        if match:
+            current_version = "%s%s%s%s" % (match.group(1),match.group(2),match.group(3),match.group(4))
+            if current_version:
+                new_version = requests.get('http://www.webgrabplus.com/sites/default/files/download/ini/latest_version.txt').content
+                if new_version and new_version > current_version:
+                    need_download = True
+        if not need_download:
+            result = dialog.yesno('Current version is the latest','Force download?')
+            if not result:
+                return
+    dialog.notification("Webgrab+Plus Configurator","Downloading siteini.pack")
     folder = 'special://profile/addon_data/script.webgrab/webgrab'
     file = 'special://profile/addon_data/script.webgrab/SiteIniPack_current.zip'
     xbmcvfs.mkdirs(folder)
@@ -597,6 +617,7 @@ def download_ini_pack():
         z = zip.extractall(xbmc.translatePath(folder))
     except:
         return
+    dialog.notification("Webgrab+Plus Configurator","Finished Downloading siteini.pack")
 
 @plugin.route('/toggle_hide/<country>/<site>/<site_id>/<xmltv_id>/<name>')
 def toggle_hide(country,site,site_id,xmltv_id,name):
@@ -1021,7 +1042,7 @@ def show_log():
 
 def timezone_dialog(current):
     dialog = xbmcgui.Dialog()
-    selected = dialog.select('Select New Timezone (%s)' % current, timezones)
+    selected = dialog.select('Select New Timezone (Current:%s) (Cancel to Keep Current)' % current, timezones)
     if selected:
         return timezones[selected]
     else:
