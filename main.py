@@ -1030,7 +1030,7 @@ def site_ini_version():
     dirs, files = xbmcvfs.listdir(path)
     f = [f for f in files if f.startswith('Site')]
     dialog = xbmcgui.Dialog()
-    dialog.select('Site Ini Pack Version', f)
+    dialog.select('Site Ini Pack Version', [f[-1]])
 
 @plugin.route('/show_log')
 def show_log():
@@ -1348,7 +1348,7 @@ def index():
     })
     items.append(
     {
-        'label': 'Lab',
+        'label': 'Experimental Site Wizards',
         'path': plugin.url_for('lab'),
         'thumbnail':get_icon_path('settings'),
     })
