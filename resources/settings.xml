@@ -1,5 +1,7 @@
 <settings>
 <category label="Paths">
+<setting label="Device" type="enum" id="device" values="Unspecified|LibreELEC|Windows 32Bit|Windows 64Bit" default="0"/>
+<setting type="sep"/>
 <setting id="exe" label="Webgrab+Plus Program" type="file" default="" />
 <setting id="config_output_folder" label="Config Output Folder" type="folder" default="" />
 <setting type="sep"/>

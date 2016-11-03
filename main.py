@@ -684,10 +684,41 @@ def lab():
     })
     return items
 
+@plugin.route('/device_wizard')
+def device_wizard():
+    dialog = xbmcgui.Dialog()
+    index = dialog.select('Choose Device', ["LibreELEC", "Windows 32Bit", "Windows 64Bit"])
+    if index == -1:
+        return
+    if index == 0:
+        plugin.set_setting('device','1')
+        plugin.set_setting('exe','/storage/.kodi/addons/service.webgrabplus/bin/webgrabplus.start')
+        plugin.set_setting('config_output_folder','/storage/.kodi/userdata/addon_data/service.webgrabplus/')
+        plugin.set_setting('xmltv_name','guide_wgp.xml')
+        plugin.set_setting('xmltv_output_folder','/storage/.kodi/userdata/addon_data/service.webgrabplus/')
+    elif index == 1:
+        plugin.set_setting('device','2')
+        plugin.set_setting('exe','C:\\Program Files\\ServerCare\\WebGrab+PlusV1.1.1\\WebGrab+Plus.exe')
+        plugin.set_setting('config_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
+        plugin.set_setting('xmltv_name','xmltv.xml')
+        plugin.set_setting('xmltv_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
+    elif index == 2:
+        plugin.set_setting('device','3')
+        plugin.set_setting('exe','C:\\Program Files (x86)\\ServerCare\\WebGrab+PlusV1.1.1\\WebGrab+Plus.exe')
+        plugin.set_setting('config_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
+        plugin.set_setting('xmltv_name','xmltv.xml')
+        plugin.set_setting('xmltv_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
 
 @plugin.route('/')
 def index():
     items = []
+
+    items.append(
+    {
+        'label': 'Device Settings Wizard',
+        'path': plugin.url_for('device_wizard'),
+        'thumbnail':get_icon_path('wizard'),
+    })
     items.append(
     {
         'label': 'Download Site Pack',
