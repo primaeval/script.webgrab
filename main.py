@@ -1346,11 +1346,22 @@ def import_config():
                 ini_country[site] = [countries[0]] #maybe
             else:
                 ini_country[site] = [countries[save]]
+
+    i = max(channels.values()) + 1
     for id in ids:
         site = id.split('|')[1]
         country = ini_country[site][0]
         new_id = "%s|%s" % (country,id)
-        channels[new_id] = -1
+        channels[new_id] = i
+        i = i + 1
+
+
+@plugin.route('/clear')
+def clear():
+    channels = plugin.get_storage('channels')
+    channels.clear()
+    hidden_channels = plugin.get_storage('hidden_channels')
+    hidden_channels.clear()
 
 @plugin.route('/')
 def index():
@@ -1415,6 +1426,12 @@ def index():
     {
         'label': 'Import WebGrab++.config.xml',
         'path': plugin.url_for('import_config'),
+        'thumbnail':get_icon_path('settings'),
+    })
+    items.append(
+    {
+        'label': 'Clear Selected Channels',
+        'path': plugin.url_for('clear'),
         'thumbnail':get_icon_path('settings'),
     })
     return items
