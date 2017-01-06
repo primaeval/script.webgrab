@@ -1320,24 +1320,37 @@ def import_config():
                 site = f[:-4]
                 if site in ini_country:
                     log('[script.webgrab] duplicate ini found: %s' % site)
-                ini_country[site] = country
+                    ini_country[site].append(country)
+                else:
+                    ini_country[site] = [country]
+
     f = xbmcvfs.File(config_file,"rb")
     data = f.read()
     match = re.findall(r'<channel(.*?)>(.*?)</channel>',data)
+    ids = []
+    sites = {}
     for m in match:
         attributes = m[0]
         name = m[1]
         site = re.search('site="(.*?)"',attributes).group(1)
         site_id = re.search('site_id="(.*?)"',attributes).group(1)
         xmltv_id = re.search('xmltv_id="(.*?)"',attributes).group(1)
-        country = ini_country.get(site,'')
-        if not country:
-            #TODO ask
-            log('[script.webgrab] country not found: %s' % country)
-            continue
-        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
-        channels[id] = -1
-
+        id = "%s|%s|%s|%s" % (name,site,site_id,xmltv_id)
+        ids.append(id)
+        sites[site] = site
+    for site in sites:
+        countries = ini_country[site]
+        if len(countries) > 1:
+            save = d.select('Choose Country',countries)
+            if save == -1:
+                ini_country[site] = [countries[0]] #maybe
+            else:
+                ini_country[site] = [countries[save]]
+    for id in ids:
+        site = id.split('|')[1]
+        country = ini_country[site][0]
+        new_id = "%s|%s" % (country,id)
+        channels[new_id] = -1
 
 @plugin.route('/')
 def index():
