@@ -1293,6 +1293,52 @@ def device_wizard():
         plugin.set_setting('xmltv_name','xmltv.xml')
         plugin.set_setting('xmltv_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
 
+@plugin.route('/import_config')
+def import_config():
+    channels = plugin.get_storage("channels")
+    d = xbmcgui.Dialog()
+    root = d.select("Root Folder",["Home","Shares","Config"])
+    if root == -1:
+        return
+    if root == 0:
+        root_folder = 'special://home'
+    elif root == 1:
+        root_folder = ''
+    else:
+        root_folder = 'special://profile/addon_data/script.webgrab/webgrab/config/'
+    config_file = d.browse(1, 'WebGrab++.config.xml', 'files', 'WebGrab++.config.xml', False, False, root_folder)
+    if not config_file:
+        return
+    folder = 'special://profile/addon_data/script.webgrab/webgrab/siteini.pack/'
+    items = []
+    dirs, files = xbmcvfs.listdir(folder)
+    ini_country = {}
+    for country in dirs:
+        dirs, files = xbmcvfs.listdir(folder+country)
+        for f in files:
+            if f.endswith('.ini'):
+                site = f[:-4]
+                if site in ini_country:
+                    log('[script.webgrab] duplicate ini found: %s' % site)
+                ini_country[site] = country
+    f = xbmcvfs.File(config_file,"rb")
+    data = f.read()
+    match = re.findall(r'<channel(.*?)>(.*?)</channel>',data)
+    for m in match:
+        attributes = m[0]
+        name = m[1]
+        site = re.search('site="(.*?)"',attributes).group(1)
+        site_id = re.search('site_id="(.*?)"',attributes).group(1)
+        xmltv_id = re.search('xmltv_id="(.*?)"',attributes).group(1)
+        country = ini_country.get(site,'')
+        if not country:
+            #TODO ask
+            log('[script.webgrab] country not found: %s' % country)
+            continue
+        id = "%s|%s|%s|%s|%s" % (country,name,site,site_id,xmltv_id)
+        channels[id] = -1
+
+
 @plugin.route('/')
 def index():
     items = []
@@ -1350,6 +1396,12 @@ def index():
     {
         'label': 'Experimental Site Wizards',
         'path': plugin.url_for('lab'),
+        'thumbnail':get_icon_path('settings'),
+    })
+    items.append(
+    {
+        'label': 'Import WebGrab++.config.xml',
+        'path': plugin.url_for('import_config'),
         'thumbnail':get_icon_path('settings'),
     })
     return items
