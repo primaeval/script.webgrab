@@ -1347,7 +1347,10 @@ def import_config():
             else:
                 ini_country[site] = [countries[save]]
 
-    i = max(channels.values()) + 1
+    if len(channels.raw_dict()):
+        i = max(channels.values()) + 1
+    else:
+        i = 0
     for id in ids:
         site = id.split('|')[1]
         country = ini_country[site][0]
