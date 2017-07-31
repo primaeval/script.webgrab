@@ -1271,7 +1271,7 @@ def lab():
 @plugin.route('/device_wizard')
 def device_wizard():
     dialog = xbmcgui.Dialog()
-    index = dialog.select('Choose Device', ["LibreELEC", "Windows 32Bit", "Windows 64Bit"])
+    index = dialog.select('Choose Device', ["LibreELEC 7", "Windows 32Bit v1", "Windows 64Bit v1","LibreELEC 8", "Windows 32Bit v2", "Windows 64Bit v2"])
     if index == -1:
         return
     if index == 0:
@@ -1289,6 +1289,24 @@ def device_wizard():
     elif index == 2:
         plugin.set_setting('device','3')
         plugin.set_setting('exe','C:\\Program Files (x86)\\ServerCare\\WebGrab+PlusV1.1.1\\WebGrab+Plus.exe')
+        plugin.set_setting('config_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
+        plugin.set_setting('xmltv_name','xmltv.xml')
+        plugin.set_setting('xmltv_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
+    if index == 3:
+        plugin.set_setting('device','1')
+        plugin.set_setting('exe','/storage/.kodi/addons/service.webgrabplus/bin/webgrabplus.run')
+        plugin.set_setting('config_output_folder','/storage/.kodi/userdata/addon_data/service.webgrabplus/')
+        plugin.set_setting('xmltv_name','guide_wgp.xml')
+        plugin.set_setting('xmltv_output_folder','/storage/.kodi/userdata/addon_data/service.webgrabplus/')
+    elif index == 4:
+        plugin.set_setting('device','2')
+        plugin.set_setting('exe','C:\\Program Files\\WebGrab+Plus\\bin\\WebGrab+Plus.exe')
+        plugin.set_setting('config_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
+        plugin.set_setting('xmltv_name','xmltv.xml')
+        plugin.set_setting('xmltv_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
+    elif index == 5:
+        plugin.set_setting('device','3')
+        plugin.set_setting('exe','C:\\Program Files (x86)\\WebGrab+Plus\\bin\\WebGrab+Plus.exe')
         plugin.set_setting('config_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
         plugin.set_setting('xmltv_name','xmltv.xml')
         plugin.set_setting('xmltv_output_folder','C:\\ProgramData\\ServerCare\\WebGrab\\')
