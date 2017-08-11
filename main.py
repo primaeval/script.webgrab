@@ -1301,15 +1301,15 @@ def device_wizard():
     elif index == 4:
         plugin.set_setting('device','2')
         plugin.set_setting('exe','C:\\Program Files\\WebGrab+Plus\\bin\\WebGrab+Plus.exe')
-        plugin.set_setting('config_output_folder',os.path.join(os.getenv("LOCALAPPDATA"), "WebGrab+Plus"))
+        plugin.set_setting('config_output_folder',os.path.join(os.getenv("LOCALAPPDATA"), "WebGrab+Plus\\"))
         plugin.set_setting('xmltv_name','xmltv.xml')
-        plugin.set_setting('xmltv_output_folder',os.path.join(os.getenv("LOCALAPPDATA"), "WebGrab+Plus"))
+        plugin.set_setting('xmltv_output_folder',os.path.join(os.getenv("LOCALAPPDATA"), "WebGrab+Plus\\"))
     elif index == 5:
         plugin.set_setting('device','3')
         plugin.set_setting('exe','C:\\Program Files (x86)\\WebGrab+Plus\\bin\\WebGrab+Plus.exe')
-        plugin.set_setting('config_output_folder',os.path.join(os.getenv("LOCALAPPDATA"), "WebGrab+Plus"))
+        plugin.set_setting('config_output_folder',os.path.join(os.getenv("LOCALAPPDATA"), "WebGrab+Plus\\"))
         plugin.set_setting('xmltv_name','xmltv.xml')
-        plugin.set_setting('xmltv_output_folder',os.path.join(os.getenv("LOCALAPPDATA"), "WebGrab+Plus"))
+        plugin.set_setting('xmltv_output_folder',os.path.join(os.getenv("LOCALAPPDATA"), "WebGrab+Plus\\"))
 
 @plugin.route('/import_config')
 def import_config():
